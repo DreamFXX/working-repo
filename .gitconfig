@@ -1,0 +1,12 @@
+[core]
+	editor = \"C:\\Users\\marti\\AppData\\Local\\Programs\\Microsoft VS Code\\bin\\code\" --wait
+[user]
+	email = filipek.husak@gmail.com
+	name = DreamFXX
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[safe]
+	directory = C:/Users/marti/source
