@@ -1,0 +1,4 @@
+- Pomocí metody Clear() mùžete vyprázdnit hodnoty prvkù v poli.
+- Pomocí metody Resize() mùžete zmìnit poèet prvkù v poli, a to odebráním nebo pøidáním prvkù na konci pole.
+- 
+- Nové prvky polí a vymazané prvky mají hodnotu null, což znamená, že neodkazují na hodnotu v pamìti.
