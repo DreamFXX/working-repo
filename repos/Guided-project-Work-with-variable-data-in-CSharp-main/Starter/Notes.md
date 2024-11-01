@@ -1,0 +1,1 @@
+- Dvojrozmìrná øetìzcová matice s názvem ourAnimals. Inicializovali jste poèet øádkù definovaných maxPets na 8. Poèet charakteristik, které ukládáte pùvodnì, je šest. Šest charakteristik odpovídá poètu øetìzcových promìnných, které jste prozkoumali v vzorovém kódu, ale poèet charakteristik je potøeba rozšíøit a pøidat pole pro suggestedDonation
