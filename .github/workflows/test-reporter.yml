@@ -1,3 +1,59 @@
-name: Test Reporter
+            - name: Test Reporter
+  # You may pin to the exact commit or the version.
+  # uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5
   uses: dorny/test-reporter@v1.9.1
-            
+  with:
+    # Name or regex of artifact containing test results
+    artifact: # optional
+    # Name of the check run
+    name: 
+    # Comma-separated list of paths to test results
+Supports wildcards via [fast-glob](https://github.com/mrmlnc/fast-glob)
+All matched result files must be of same format
+
+    path: 
+    # The fast-glob library that is internally used interprets backslashes as escape characters.
+If enabled, all backslashes in provided path will be replaced by forward slashes and act as directory separators.
+It might be useful when path input variable is composed dynamically from existing directory paths on Windows.
+
+    path-replace-backslashes: # optional, default is false
+    # Format of test results. Supported options:
+  - dart-json
+  - dotnet-trx
+  - flutter-json
+  - java-junit
+  - jest-junit
+  - mocha-json
+  - rspec-json
+  - swift-xunit
+
+    reporter: 
+    # Limits which test suites are listed. Supported options:
+  - all
+  - only-failed
+
+    list-suites: # optional, default is all
+    # Limits which test cases are listed. Supported options:
+  - all
+  - only-failed
+  - none
+
+    list-tests: # optional, default is all
+    # Limits number of created annotations with error message and stack trace captured during test execution.
+Must be less or equal to 50.
+
+    max-annotations: # optional, default is 10
+    # Set this action as failed if test report contain any failed test
+    fail-on-error: # optional, default is true
+    # Set this action as failed if no test results were found
+    fail-on-empty: # default is true
+    # Relative path under $GITHUB_WORKSPACE where the repository was checked out
+    working-directory: # optional
+    # Allows you to generate only the summary.
+If enabled, the report will contain a table listing each test results file and the number of passed, failed, and skipped tests.
+Detailed listing of test suites and test cases will be skipped.
+
+    only-summary: # optional, default is false
+    # GitHub Access Token
+    token: # optional, default is ${{ github.token }}
+          
