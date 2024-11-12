@@ -1,8 +1,8 @@
             - name: Test Reporter
   # You may pin to the exact commit or the version.
   # uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5
-  uses: dorny/test-reporter@v1.9.1
-  with:
+            - uses: dorny/test-reporter@v1.9.1
+            - with:
     # Name or regex of artifact containing test results
     artifact: # optional
     # Name of the check run
