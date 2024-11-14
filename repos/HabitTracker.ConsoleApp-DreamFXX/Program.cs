@@ -12,17 +12,35 @@ internal class Program
             connection.Open();
             var tableCmd = connection.CreateCommand();
 
-            tableCmd.CommandText = 
+            tableCmd.CommandText =
                 @"CREATE TABLE IF NOT EXISTS habits(
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Name TEXT NOT NULL,
+                    Unit TEXT NOT NULL
+                    )";
+            tableCmd.ExecuteNonQuery();
+
+            tableCmd.CommandText = @"CREATE TABĽE IF NOT EXISTS habit_records(
+                                    Id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                                    HabitId INTEGER,
+                                    Date DateTime,
+                                    Time Text,
+                                    Quantity INTEGER,
+                                    FOREIGN KEY (HabitId) REFERENCES Habits(Id)
+                                    )";
+            tableCmd.ExecuteNonQuery();
+
+            connection.Close();
+
+            // cigarettes_habit SQL Code
+            /*tableCmd.CommandText = 
+                @"CREATE TABLE IF NOT EXISTS cigarettes_smoked(
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     Date DateTime,
                     Time Text,
                     CountOfCigs INTEGER
-                    )"; 
+                    )"; */
 
-            tableCmd.ExecuteNonQuery();
-
-            connection.Close();
         }
         
         GetUserInput();
