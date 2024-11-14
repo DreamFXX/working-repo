@@ -3,7 +3,7 @@ using System.Globalization;
 
 internal class Program
 {
-    static string connectionString = @"Data Source=HabitTracker-ConsoleApp.db";
+    static string connectionString = @"Data Source=HabitTrackerPersonal-ConsoleApp.db";
 
     static void Main(string[] args)
     {
@@ -13,7 +13,7 @@ internal class Program
             var tableCmd = connection.CreateCommand();
 
             tableCmd.CommandText = 
-                @"CREATE TABLE IF NOT EXISTS cigarettes_smoked(
+                @"CREATE TABLE IF NOT EXISTS habits(
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     Date DateTime,
                     Time Text,
@@ -35,14 +35,15 @@ internal class Program
         bool closeApp = false;
         while (closeApp == false)
         {
-            Console.WriteLine("Welcome to Smoke Tracker!");
-            Console.WriteLine("\nMAIN MENU");
-            Console.WriteLine("0 -> Save and Exit App\n");
+            Console.WriteLine("Welcome to SMOKE TRACKER! \n\n");
+            Console.WriteLine("\nMAIN MENU\n");
+            Console.WriteLine("0 -> Save and Exit App\n\n");
             Console.WriteLine("------------------------------------------");
             Console.WriteLine("1 -> Show All records.");
             Console.WriteLine("2 -> Add a record.");
             Console.WriteLine("3 -> Delete a record");
             Console.WriteLine("4 -> Modify a record.");
+            Console.WriteLine("5 -> Add your own Habit to this App.");
             Console.WriteLine("------------------------------------------");
 
             string command = Console.ReadLine();
@@ -66,11 +67,19 @@ internal class Program
                 case "4":
                     ChangeRecord();
                     break;
+                case "5":
+                    AddNewHabit();
+                    break;
                 default:
                     Console.WriteLine("\n\nInvalid number of operation. Try Again. (0 - 4).\n\n");
                     break;
             }
         }
+    }
+
+    internal static void AddNewHabit()
+    {
+        
     }
 
     private static void ViewAllRecords()
