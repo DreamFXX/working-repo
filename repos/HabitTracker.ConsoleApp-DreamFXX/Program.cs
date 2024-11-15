@@ -20,14 +20,15 @@ internal class Program
                     )";
             tableCmd.ExecuteNonQuery();
 
-            tableCmd.CommandText = @"CREATE TABĽE IF NOT EXISTS habit_records(
-                                    Id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                                    HabitId INTEGER,
-                                    Date DateTime,
-                                    Time Text,
-                                    Quantity INTEGER,
-                                    FOREIGN KEY (HabitId) REFERENCES Habits(Id)
-                                    )";
+            tableCmd.CommandText = 
+                @"CREATE TABĽE IF NOT EXISTS habit_records(
+                  Id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                  HabitId INTEGER,
+                  Date DateTime,
+                  Time Text,
+                  Quantity INTEGER,
+                  FOREIGN KEY (HabitId) REFERENCES Habits(Id)
+                  )";
             tableCmd.ExecuteNonQuery();
 
             connection.Close();
@@ -40,7 +41,6 @@ internal class Program
                     Time Text,
                     CountOfCigs INTEGER
                     )"; */
-
         }
         
         GetUserInput();
@@ -93,11 +93,6 @@ internal class Program
                     break;
             }
         }
-    }
-
-    internal static void AddNewHabit()
-    {
-        
     }
 
     private static void ViewAllRecords()
@@ -232,7 +227,7 @@ internal class Program
         GetUserInput();
     }
 
-
+    // Get user values section
 
     internal static string GetTime()
     {
@@ -280,7 +275,30 @@ internal class Program
 
         return intCountInput;
     }
+
+
+// Users own Habit to Add
+
+    static void AddNewHabit()
+    {
+        Console.WriteLine("\nEnter the name of the habit you want to track: ");
+        string habitName = Console.ReadLine();
+
+        Console.WriteLine("\nEnter the unit of measurement (e.g: Amount consumed {ml, g, liters Etc.} or anything like minutes, hours, kilometers): ");
+        string habitUnit = Console.ReadLine();
+
+        using (var connection = new SQLiteConnection(connectionString))
+        {
+            connection.Open();
+            var tableCmd = connection.CreateCommand();
+            tableCmd.CommandText = $"INSERT into habits(Name, Unit) VALUES('{habitName}', '{habitUnit}')";
+
+            tableCmd.ExecuteNonQuery();
+            connection.Close();
+        }
+    }
 }
+// Properties class
 
 public class CigarettesSmoked
 {
