@@ -20,7 +20,7 @@ internal class Program
                     )";
             tableCmd.ExecuteNonQuery();
 
-            tableCmd.CommandText = 
+            tableCmd.CommandText =
                 @"CREATE TABĽE IF NOT EXISTS habit_records(
                   Id INTEGER PRIMARY KEY AUTOINCREMENT, 
                   HabitId INTEGER,
@@ -42,7 +42,7 @@ internal class Program
                     CountOfCigs INTEGER
                     )"; */
         }
-        
+
         GetUserInput();
     }
 
@@ -119,7 +119,7 @@ internal class Program
                             Id = reader.GetInt32(0),
                             Date = reader.GetString(1),
                             Time = reader.GetString(2),
-                            CountOfCigs = reader.GetInt32(3)
+                            Quantity = reader.GetInt32(3)
                         });
                 }
             }
@@ -134,24 +134,24 @@ internal class Program
             Console.WriteLine("------------CIGARETTES SMOKED LIST-----------\n");
             foreach (var dw in tableData)
             {
-                Console.WriteLine($"{dw.Id} -> {dw.Date} in {dw.Time}h // {dw.CountOfCigs} Cigarettes.");
+                Console.WriteLine($"{dw.Id} -> {dw.Date} in {dw.Time}h // {dw.Quantity} Cigarettes.");
             }
             Console.WriteLine("---------------------------------------------\n");
         }
 
-        
+
     }
 
     private static void AddRecord()
     {
         string date = GetDate();
         string time = GetTime();
-        
+
         int countOfCigs = CigsCountInput("\n\nEnter number of cigarettes you smoked.\n\n");
 
         using (var connection = new SQLiteConnection(connectionString))
         {
-            connection.Open(); 
+            connection.Open();
             var tableCmd = connection.CreateCommand();
             tableCmd.CommandText = $"INSERT INTO cigarettes_smoked(date, time, countOfCigs) VALUES('{date}', '{time}', {countOfCigs})";
 
@@ -215,7 +215,7 @@ internal class Program
 
             int rowCount = tableCmd.ExecuteNonQuery();
 
-            if(rowCount == 0)
+            if (rowCount == 0)
             {
                 Console.WriteLine($"Record with ID {recordId} does not exist. Try Again.");
                 DeleteRecod();
@@ -238,7 +238,7 @@ internal class Program
 
         if (timeinput == "0") GetUserInput();
 
-       return timeinput;
+        return timeinput;
     }
 
     internal static string GetDate()
@@ -277,7 +277,7 @@ internal class Program
     }
 
 
-// Users own Habit to Add
+    // Users own Habit to Add
 
     static void AddNewHabit()
     {
@@ -296,14 +296,43 @@ internal class Program
             tableCmd.ExecuteNonQuery();
             connection.Close();
         }
+        Console.WriteLine($"New Habit named - '{habitName}' was sucessfully added");
     }
-}
-// Properties class
 
-public class CigarettesSmoked
-{
-    public int Id { get; set; }
-    public string Time { get; set; }
-    public string Date { get; set; }
-    public int CountOfCigs { get; set; }
+    static void ViewAllHabits()
+    {
+        using(var connection = new SQLiteConnection(connectionString))
+        {
+            connection.Open();
+            var tableCmd = connection.CreateCommand();
+            tableCmd.CommandText = "SELECT * FROM habits";
+
+            using(var reader = tableCmd.ExecuteReader())
+            {
+                Console.WriteLine("\nHabits available to track in this App: ");
+
+                while (reader.Read())
+                {
+                    int id = reader.GetInt32(0);
+                    string name = reader.GetString(1);
+                    string unit = reader.GetString(2);
+                    Console.WriteLine($"{id}. {name} ({unit})");
+                }
+            }
+            connection.Close();
+        }
+    }
+
+
+
+    // Properties class
+
+    public class CigarettesSmoked
+    {
+        public int Id { get; set; }
+        public int HabitId { get; set; }
+        public string Time { get; set; }
+        public string Date { get; set; }
+        public int Quantity { get; set; }
+    }
 }
