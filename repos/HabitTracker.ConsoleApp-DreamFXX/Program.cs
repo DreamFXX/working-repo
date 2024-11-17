@@ -13,7 +13,7 @@ internal class Program
             var tableCmd = connection.CreateCommand();
 
             tableCmd.CommandText =
-                @"CREATE TABLE IF NOT EXISTS habits(
+                @"CREATE TABLE IF NOT EXISTS Habits(
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     Name TEXT NOT NULL,
                     Unit TEXT NOT NULL
@@ -21,7 +21,7 @@ internal class Program
             tableCmd.ExecuteNonQuery();
 
             tableCmd.CommandText =
-                @"CREATE TABLE IF NOT EXISTS habit_records(
+                @"CREATE TABLE IF NOT EXISTS HabitRecords(
                   Id INTEGER PRIMARY KEY AUTOINCREMENT, 
                   HabitId INTEGER,
                   Date DateTime,
@@ -105,10 +105,9 @@ internal class Program
         {
             connection.Open();
             var tableCmd = connection.CreateCommand();
-            tableCmd.CommandText = "SELECT * FROM cigarettes_smoked";
+            tableCmd.CommandText = "SELECT * FROM HabitRecords";
 
-            List<HabitRecords> tableData = new();
-
+            List<HabitRecord> tableData = new List<HabitRecord>();
             SQLiteDataReader reader = tableCmd.ExecuteReader();
 
             if (reader.HasRows)
@@ -116,37 +115,35 @@ internal class Program
                 while (reader.Read())
                 {
                     tableData.Add(
-                        new HabitRecords
+                        new HabitRecord
                         {
                             Id = reader.GetInt32(0),
-                            Date = reader.GetString(1),
-                            Time = reader.GetString(2),
-                            Quantity = reader.GetInt32(3)
+                            HabitId = reader.GetInt32(1),
+                            Date = reader.GetString(2),
+                            Time = reader.GetString(3),
+                            Quantity = reader.GetInt32(4)
                         });
                 }
             }
             else
             {
-                Console.WriteLine("\n\nNo records added to show. Start noting your consumption!\n\n");
+                Console.WriteLine("\n\nNo records were found!\n\n");
             }
 
             connection.Close();
 
-
             Console.WriteLine("------------HABIT RECORDS-----------\n");
-            foreach (var dw in tableData)
+            foreach (var record in tableData)
             {
-                Console.WriteLine($"{dw.Id} -> {dw.Date} in {dw.Time}h // {dw.Quantity} Cigarettes.");
+                Console.WriteLine($"{record.Id} -> {record.Date} in {record.Time}h // Quantity: {record.Quantity}.");
             }
             Console.WriteLine("------------------------------------\n");
         }
-
-
     }
 
     private static void AddRecord()
     {
-        Console.WriteLine("Choose a habit by entering habits ID number below:");
+        Console.WriteLine("Choose a habit by entering Habits ID number below:");
         ViewHabits();
 
         int habitId = GetNumberInput("Enter ID number of habit you want to work with:");
@@ -158,7 +155,7 @@ internal class Program
         {
             connection.Open();
             var tableCmd = connection.CreateCommand();
-            tableCmd.CommandText = $"INSERT INTO habit_records (HabitId, Date, Time, Quantity) VALUES ({habitId}, '{date}', '{time}', {quantity})";
+            tableCmd.CommandText = $"INSERT INTO HabitRecords (HabitId, Date, Time, Quantity) VALUES ({habitId}, '{date}', '{time}', {quantity})";
 
             tableCmd.ExecuteNonQuery();
             connection.Close();
@@ -296,7 +293,7 @@ internal class Program
         {
             connection.Open();
             var tableCmd = connection.CreateCommand();
-            tableCmd.CommandText = $"INSERT into habits(Name, Unit) VALUES('{habitName}', '{habitUnit}')";
+            tableCmd.CommandText = $"INSERT into Habits(Name, Unit) VALUES('{habitName}', '{habitUnit}')";
 
             tableCmd.ExecuteNonQuery();
             connection.Close();
@@ -310,7 +307,7 @@ internal class Program
         {
             connection.Open();
             var tableCmd = connection.CreateCommand();
-            tableCmd.CommandText = "SELECT * FROM habits";
+            tableCmd.CommandText = "SELECT * FROM Habits";
 
             using(var reader = tableCmd.ExecuteReader())
             {
@@ -330,7 +327,7 @@ internal class Program
 
     // Properties class
 
-    public class HabitRecords
+    public class HabitRecord
     {
         public int Id { get; set; }
         public int HabitId { get; set; }
