@@ -33,16 +33,9 @@ internal class Program
 
             connection.Close();
 
-            // cigarettes_habit SQL Code
-            /*tableCmd.CommandText = 
-                @"CREATE TABLE IF NOT EXISTS cigarettes_smoked(
-                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    Date DateTime,
-                    Time Text,
-                    CountOfCigs INTEGER
-                    )"; */
         }
-        // FillDatatables();
+
+        //FillDatatables();
         GetUserInput();
     }
 
@@ -80,7 +73,7 @@ internal class Program
                     AddRecord();
                     break;
                 case "3":
-                    DeleteRecod();
+                    DeleteRecord();
                     break;
                 case "4":
                     ChangeRecord();
@@ -171,36 +164,30 @@ internal class Program
         using (var connection = new SQLiteConnection(connectionString))
         {
             connection.Open();
-
             var checkCmd = connection.CreateCommand();
-            checkCmd.CommandText = $"SELECT EXISTS(SELECT 1 FROM cigarettes_smoked WHERE Id = {recordId})";
+            checkCmd.CommandText = $"SELECT EXISTS(SELECT 1 FROM HabitRecords WHERE Id = {recordId})";
 
             int checkQuery = Convert.ToInt32(checkCmd.ExecuteScalar());
-
             if (checkQuery == 0)
             {
-                Console.WriteLine($"\n\nRecord with ID {recordId} does not exist. Enter ID number of an existing record.\n\n");
+                Console.WriteLine($"\n\nRecord with Id {recordId} doesn't exist.\n\n");
                 connection.Close();
                 ChangeRecord();
             }
 
             string date = GetDate();
             string time = GetTime();
-
-            int countOfCigs = GetNumberInput("\n\nEnter how many cigarettes you smoked.\n\n");
+            int quantity = GetNumberInput("\n\nEnter the quantity:\n\n");
 
             var tableCmd = connection.CreateCommand();
-            tableCmd.CommandText = $"UPDATE cigarettes_smoked SET date = '{date}', time = '{time}', CountOfCigs = {countOfCigs} WHERE Id = {recordId}";
-
+            tableCmd.CommandText = $"UPDATE HabitRecords SET Date = '{date}', Time = '{time}', Quantity = {quantity} WHERE Id = {recordId}";
             tableCmd.ExecuteNonQuery();
 
             connection.Close();
         }
-
-
     }
 
-    private static void DeleteRecod()
+    private static void DeleteRecord()
     {
         Console.Clear();
         ViewAllRecords();
@@ -218,7 +205,7 @@ internal class Program
             if (rowCount == 0)
             {
                 Console.WriteLine($"Record with ID {recordId} does not exist. Try Again.");
-                DeleteRecod();
+                DeleteRecord();
             }
             connection.Close();
         }
