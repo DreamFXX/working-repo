@@ -5,7 +5,7 @@ internal class Program
 {
     static string connectionString = @"Data Source=HabitTrackerPersonal-ConsoleApp.db";
 
-    static void Main(string[] args)
+    static void Main()
     {
         using (var connection = new SQLiteConnection(connectionString))
         {
@@ -144,10 +144,16 @@ internal class Program
 
     private static void AddRecord()
     {
+        Console.WriteLine("Choose a habit by entering habits ID number below:");
+        ViewHabits();
+
+        int habitId = Convert.ToInt32(Console.ReadLine());
         string date = GetDate();
         string time = GetTime();
+        int quantity = GetQuantityNumber("Enter quantity of habit you consumed // ran // did in units you selected in specified habit tracking.");
 
-        int countOfCigs = CigsCountInput("\n\nEnter number of cigarettes you smoked.\n\n");
+
+        int countOfCigs = GetQuantityNumber("\n\nEnter number of cigarettes you sm;oked.\n\n");
 
         using (var connection = new SQLiteConnection(connectionString))
         {
@@ -165,7 +171,7 @@ internal class Program
     {
         ViewAllRecords();
 
-        var recordId = CigsCountInput("\n\nEnter ID number of record you want to modify.\n\n");
+        var recordId = GetQuantityNumber("\n\nEnter ID number of record you want to modify.\n\n");
 
         using (var connection = new SQLiteConnection(connectionString))
         {
@@ -186,7 +192,7 @@ internal class Program
             string date = GetDate();
             string time = GetTime();
 
-            int countOfCigs = CigsCountInput("\n\nEnter how many cigarettes you smoked.\n\n");
+            int countOfCigs = GetQuantityNumber("\n\nEnter how many cigarettes you smoked.\n\n");
 
             var tableCmd = connection.CreateCommand();
             tableCmd.CommandText = $"UPDATE cigarettes_smoked SET date = '{date}', time = '{time}', CountOfCigs = {countOfCigs} WHERE Id = {recordId}";
@@ -204,7 +210,7 @@ internal class Program
         Console.Clear();
         ViewAllRecords();
 
-        var recordId = CigsCountInput("Enter ID number of the record you want to DELETE.");
+        var recordId = GetQuantityNumber("Enter ID number of the record you want to DELETE.");
 
 
         using (var connection = new SQLiteConnection(connectionString))
@@ -257,7 +263,7 @@ internal class Program
         return dateInput;
     }
 
-    internal static int CigsCountInput(string message)
+    internal static int GetQuantityNumber(string message)
     {
         Console.WriteLine(message);
 
@@ -299,7 +305,7 @@ internal class Program
         Console.WriteLine($"New Habit named - '{habitName}' was sucessfully added");
     }
 
-    static void ViewAllHabits()
+    static void ViewHabits()
     {
         using(var connection = new SQLiteConnection(connectionString))
         {
