@@ -107,7 +107,7 @@ internal class Program
             var tableCmd = connection.CreateCommand();
             tableCmd.CommandText = "SELECT * FROM cigarettes_smoked";
 
-            List<CigarettesSmoked> tableData = new();
+            List<HabitRecords> tableData = new();
 
             SQLiteDataReader reader = tableCmd.ExecuteReader();
 
@@ -116,7 +116,7 @@ internal class Program
                 while (reader.Read())
                 {
                     tableData.Add(
-                        new CigarettesSmoked
+                        new HabitRecords
                         {
                             Id = reader.GetInt32(0),
                             Date = reader.GetString(1),
@@ -330,7 +330,7 @@ internal class Program
 
     // Properties class
 
-    public class CigarettesSmoked
+    public class HabitRecords
     {
         public int Id { get; set; }
         public int HabitId { get; set; }
