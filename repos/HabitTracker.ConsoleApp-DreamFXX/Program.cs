@@ -13,7 +13,7 @@ internal class Program
             var tableCmd = connection.CreateCommand();
 
             tableCmd.CommandText =
-                @"CREATE TABLE IF NOT EXISTS Habits(
+                @"CREATE TABLE IF NOT EXISTS Habits (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     Name TEXT NOT NULL,
                     Unit TEXT NOT NULL
@@ -21,14 +21,13 @@ internal class Program
             tableCmd.ExecuteNonQuery();
 
             tableCmd.CommandText =
-                @"CREATE TABLE IF NOT EXISTS HabitRecords(
+                @"CREATE TABLE IF NOT EXISTS HabitRecords (
                   Id INTEGER PRIMARY KEY AUTOINCREMENT,
                   HabitId INTEGER,
                   Date Text,
                   Time Text,
                   Quantity INTEGER,
-                  FOREIGN KEY (HabitId) REFERENCES Habits(Id),
-                  FOREIGN KEY (HabitId) REFERENCES Habits(Unit)
+                  FOREIGN KEY (HabitId) REFERENCES Habits(Id)
                   )";
             tableCmd.ExecuteNonQuery();
 
@@ -43,9 +42,8 @@ internal class Program
                     CountOfCigs INTEGER
                     )"; */
         }
-
+        // FillDatatables();
         GetUserInput();
-        FillDatatables();
     }
 
     static void GetUserInput()
@@ -160,6 +158,7 @@ internal class Program
             tableCmd.ExecuteNonQuery();
             connection.Close();
         }
+
         Console.WriteLine("\nNew record was added sucessfully!\n\n");
     }
 
@@ -213,15 +212,15 @@ internal class Program
         {
             connection.Open();
             var tableCmd = connection.CreateCommand();
-            tableCmd.CommandText = $"DELETE from cigarettes_smoked WHERE Id = {recordId}";
+            tableCmd.CommandText = $"DELETE FROM HabitRecords WHERE Id = {recordId}";
 
             int rowCount = tableCmd.ExecuteNonQuery();
-
             if (rowCount == 0)
             {
                 Console.WriteLine($"Record with ID {recordId} does not exist. Try Again.");
                 DeleteRecod();
             }
+            connection.Close();
         }
 
         Console.WriteLine($"Record with {recordId} was succesfully deleted. Press ENTER to go back to the MENU.");
