@@ -21,7 +21,7 @@ internal class Program
             tableCmd.ExecuteNonQuery();
 
             tableCmd.CommandText =
-                @"CREATE TABĽE IF NOT EXISTS habit_records(
+                @"CREATE TABLE IF NOT EXISTS habit_records(
                   Id INTEGER PRIMARY KEY AUTOINCREMENT, 
                   HabitId INTEGER,
                   Date DateTime,
@@ -44,6 +44,8 @@ internal class Program
         }
 
         GetUserInput();
+
+        // !! - FillDataTables();
     }
 
     static void GetUserInput()
@@ -53,9 +55,9 @@ internal class Program
         bool closeApp = false;
         while (closeApp == false)
         {
-            Console.WriteLine("Welcome to SMOKE TRACKER! \n\n");
-            Console.WriteLine("\nMAIN MENU\n");
-            Console.WriteLine("0 -> Save and Exit App\n\n");
+            Console.WriteLine("Welcome to Habit Tracker!\n\n");
+            Console.WriteLine("MAIN MENU");
+            Console.WriteLine("0 -> Save and Exit App\n");
             Console.WriteLine("------------------------------------------");
             Console.WriteLine("1 -> Show All records.");
             Console.WriteLine("2 -> Add a record.");
@@ -89,7 +91,7 @@ internal class Program
                     AddNewHabit();
                     break;
                 default:
-                    Console.WriteLine("\n\nInvalid number of operation. Try Again. (0 - 4).\n\n");
+                    Console.WriteLine("\n\nInvalid number of operation. Try again, valid operations are in range 0 - 5.\n\n");
                     break;
             }
         }
@@ -131,12 +133,12 @@ internal class Program
             connection.Close();
 
 
-            Console.WriteLine("------------CIGARETTES SMOKED LIST-----------\n");
+            Console.WriteLine("------------HABIT RECORDS-----------\n");
             foreach (var dw in tableData)
             {
                 Console.WriteLine($"{dw.Id} -> {dw.Date} in {dw.Time}h // {dw.Quantity} Cigarettes.");
             }
-            Console.WriteLine("---------------------------------------------\n");
+            Console.WriteLine("------------------------------------\n");
         }
 
 
@@ -147,31 +149,28 @@ internal class Program
         Console.WriteLine("Choose a habit by entering habits ID number below:");
         ViewHabits();
 
-        int habitId = Convert.ToInt32(Console.ReadLine());
+        int habitId = GetNumberInput("Enter ID number of habit you want to work with:");
         string date = GetDate();
         string time = GetTime();
-        int quantity = GetQuantityNumber("Enter quantity of habit you consumed // ran // did in units you selected in specified habit tracking.");
-
-
-        int countOfCigs = GetQuantityNumber("\n\nEnter number of cigarettes you sm;oked.\n\n");
+        int quantity = GetNumberInput("Enter quantity of habit you consumed // ran // did in units you selected in specified habit tracking.");
 
         using (var connection = new SQLiteConnection(connectionString))
         {
             connection.Open();
             var tableCmd = connection.CreateCommand();
-            tableCmd.CommandText = $"INSERT INTO cigarettes_smoked(date, time, countOfCigs) VALUES('{date}', '{time}', {countOfCigs})";
+            tableCmd.CommandText = $"INSERT INTO habit_records (HabitId, Date, Time, Quantity) VALUES ({habitId}, '{date}', '{time}', {quantity})";
 
             tableCmd.ExecuteNonQuery();
-
             connection.Close();
         }
+        Console.WriteLine("\nNew record was added sucessfully!");
     }
 
     internal static void ChangeRecord()
     {
         ViewAllRecords();
 
-        var recordId = GetQuantityNumber("\n\nEnter ID number of record you want to modify.\n\n");
+        var recordId = GetNumberInput("\n\nEnter ID number of record you want to modify.\n\n");
 
         using (var connection = new SQLiteConnection(connectionString))
         {
@@ -192,7 +191,7 @@ internal class Program
             string date = GetDate();
             string time = GetTime();
 
-            int countOfCigs = GetQuantityNumber("\n\nEnter how many cigarettes you smoked.\n\n");
+            int countOfCigs = GetNumberInput("\n\nEnter how many cigarettes you smoked.\n\n");
 
             var tableCmd = connection.CreateCommand();
             tableCmd.CommandText = $"UPDATE cigarettes_smoked SET date = '{date}', time = '{time}', CountOfCigs = {countOfCigs} WHERE Id = {recordId}";
@@ -210,7 +209,7 @@ internal class Program
         Console.Clear();
         ViewAllRecords();
 
-        var recordId = GetQuantityNumber("Enter ID number of the record you want to DELETE.");
+        var recordId = GetNumberInput("Enter ID number of the record you want to DELETE.");
 
 
         using (var connection = new SQLiteConnection(connectionString))
@@ -237,8 +236,8 @@ internal class Program
 
     internal static string GetTime()
     {
-        Console.WriteLine("\n\nEnter a time of the day you smoked. //\n0 -> menu\n");
-        Console.Write("Please, Enter in this Format -> hh:mm - ");
+        Console.WriteLine("\n\nEnter what time was when you did your Habit. // Type 0 to go back to Main Menu.");
+        Console.Write("Please enter time in this format -> hh:mm - ");
 
         string timeinput = Console.ReadLine();
 
@@ -263,7 +262,7 @@ internal class Program
         return dateInput;
     }
 
-    internal static int GetQuantityNumber(string message)
+    internal static int GetNumberInput(string message)
     {
         Console.WriteLine(message);
 
@@ -328,8 +327,6 @@ internal class Program
             connection.Close();
         }
     }
-
-
 
     // Properties class
 
