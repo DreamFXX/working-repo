@@ -4,7 +4,7 @@
       "commandName": "Project",
       "workingDirectory": "C:\\Users\\marti\\source\\repos\\HabitTracker.ConsoleApp-DreamFXX",
       "nativeDebugging": true,
-      "sqlDebugging": true,
+      "sqlDebugging": false,
       "hotReloadEnabled": false
     }
   }

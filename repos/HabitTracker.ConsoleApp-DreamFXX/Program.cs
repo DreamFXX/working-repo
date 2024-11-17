@@ -22,12 +22,13 @@ internal class Program
 
             tableCmd.CommandText =
                 @"CREATE TABLE IF NOT EXISTS HabitRecords(
-                  Id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                  Id INTEGER PRIMARY KEY AUTOINCREMENT,
                   HabitId INTEGER,
-                  Date DateTime,
+                  Date Text,
                   Time Text,
                   Quantity INTEGER,
-                  FOREIGN KEY (HabitId) REFERENCES Habits(Id)
+                  FOREIGN KEY (HabitId) REFERENCES Habits(Id),
+                  FOREIGN KEY (HabitId) REFERENCES Habits(Unit)
                   )";
             tableCmd.ExecuteNonQuery();
 
@@ -44,8 +45,7 @@ internal class Program
         }
 
         GetUserInput();
-
-        // !! - FillDataTables();
+        FillDatatables();
     }
 
     static void GetUserInput()
@@ -121,7 +121,7 @@ internal class Program
                             HabitId = reader.GetInt32(1),
                             Date = reader.GetString(2),
                             Time = reader.GetString(3),
-                            Quantity = reader.GetInt32(4)
+                            Quantity = reader.GetInt32(4),
                         });
                 }
             }
@@ -135,7 +135,7 @@ internal class Program
             Console.WriteLine("------------HABIT RECORDS-----------\n");
             foreach (var record in tableData)
             {
-                Console.WriteLine($"{record.Id} -> {record.Date} in {record.Time}h // Quantity: {record.Quantity}.");
+                Console.WriteLine($"{record.Id} -> {record.Date} in {record.Time}h // {record.Quantity}");
             }
             Console.WriteLine("------------------------------------\n");
         }
@@ -143,10 +143,10 @@ internal class Program
 
     private static void AddRecord()
     {
-        Console.WriteLine("Choose a habit by entering Habits ID number below:");
+        Console.WriteLine("Choose a habit by entering Habits ID number below!");
         ViewHabits();
 
-        int habitId = GetNumberInput("Enter ID number of habit you want to work with:");
+        int habitId = GetNumberInput("Habit ID:");
         string date = GetDate();
         string time = GetTime();
         int quantity = GetNumberInput("Enter quantity of habit you consumed // ran // did in units you selected in specified habit tracking.");
@@ -160,7 +160,7 @@ internal class Program
             tableCmd.ExecuteNonQuery();
             connection.Close();
         }
-        Console.WriteLine("\nNew record was added sucessfully!");
+        Console.WriteLine("\nNew record was added sucessfully!\n\n");
     }
 
     internal static void ChangeRecord()
@@ -245,7 +245,7 @@ internal class Program
 
     internal static string GetDate()
     {
-        Console.WriteLine("\n\nEnter a date.    //      Enter 0 to go back to the menu.\n\n");
+        Console.WriteLine("\n\nEnter a date. // Enter 0 to go back to the menu.\n\n");
         Console.Write("Type the date in this order -> DD-MM-YYYY - ");
 
         string dateInput = Console.ReadLine();
@@ -278,22 +278,21 @@ internal class Program
         return intCountInput;
     }
 
-
     // Users own Habit to Add
 
     static void AddNewHabit()
     {
         Console.WriteLine("\nEnter the name of the habit you want to track: ");
-        string habitName = Console.ReadLine();
+        string? habitName = Console.ReadLine();
 
         Console.WriteLine("\nEnter the unit of measurement (e.g: Amount consumed {ml, g, liters Etc.} or anything like minutes, hours, kilometers): ");
-        string habitUnit = Console.ReadLine();
+        string? habitUnit = Console.ReadLine();
 
         using (var connection = new SQLiteConnection(connectionString))
         {
             connection.Open();
             var tableCmd = connection.CreateCommand();
-            tableCmd.CommandText = $"INSERT into Habits(Name, Unit) VALUES('{habitName}', '{habitUnit}')";
+            tableCmd.CommandText = $"INSERT into Habits (Name, Unit) VALUES ('{habitName}', '{habitUnit}')";
 
             tableCmd.ExecuteNonQuery();
             connection.Close();
@@ -325,6 +324,48 @@ internal class Program
         }
     }
 
+    static void FillDatatables()
+    {
+        using(var connection = new SQLiteConnection(connectionString))
+        {
+            connection.Open();
+            var tableCmd = connection.CreateCommand();
+
+            tableCmd.CommandText = "SELECT Id FROM Habits LIMIT 1";
+            var habitIdObj = tableCmd.ExecuteScalar();
+
+            int habitId;
+            if (habitIdObj == null)
+            {
+                tableCmd.CommandText = "INSERT INTO Habits (Name, Unit) VALUES ('Cycling', 'kilometers')";
+                tableCmd.ExecuteNonQuery();
+
+                tableCmd.CommandText = "SELECT Id FROM Habits LIMIT 1";
+                habitId = Convert.ToInt32(tableCmd.ExecuteScalar());
+            }
+            else
+            {
+                habitId = Convert.ToInt32(habitIdObj);
+            }
+
+            Random random = new Random();
+
+            for (int i = 0; i < 100; i++)
+            {
+                var date = DateTime.Today.AddDays(-random.Next(0, 365)).ToString("dd-MM-yy");
+
+                DateTime datetime = DateTime.Now;
+                var time = TimeOnly.FromDateTime(datetime).ToString(); ; // Just now time..
+
+                int quantity = random.Next(1, 100);
+                tableCmd.CommandText = $"INSERT INTO HabitRecords (HabitId, Date, Time, Quantity) VALUES({habitId}, '{date}', '{time}', {quantity})";
+                tableCmd.ExecuteNonQuery();
+            }
+            connection.Close();
+        }
+        Console.WriteLine("Testing records (100) were sucessfully created and added to their specified tables.");
+    }
+
     // Properties class
 
     public class HabitRecord
@@ -336,3 +377,4 @@ internal class Program
         public int Quantity { get; set; }
     }
 }
+
