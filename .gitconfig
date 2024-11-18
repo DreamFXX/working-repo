@@ -9,4 +9,4 @@
 	process = git-lfs filter-process
 	required = true
 [safe]
-	directory = C:/Users/marti/source
+	directory = C:/Users/marti/!working-repo
