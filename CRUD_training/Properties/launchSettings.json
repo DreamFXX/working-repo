@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CRUD_training": {
+      "commandName": "Project",
+      "workingDirectory": "C:\\Users\\marti\\_working-repo\\CRUD_training"
+    }
+  }
+}
