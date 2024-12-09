@@ -2,7 +2,9 @@
   "profiles": {
     "CRUD_training": {
       "commandName": "Project",
-      "workingDirectory": "C:\\Users\\marti\\_working-repo\\CRUD_training"
+      "workingDirectory": "C:\\Users\\marti\\_working-repo\\CRUD_training",
+      "nativeDebugging": true,
+      "sqlDebugging": true
     }
   }
 }
