@@ -11,16 +11,16 @@ internal class Program
         ConfigurationManager.ConnectionStrings["DefaultCnn"].ConnectionString;
 
     //?!
-    private static readonly string tableName = "Table_HabitTracker";
+    private static readonly string? tableName = "Table_HabitTracker";
 
     private static void Main(string[] args)
     {
         var approvedConn = RunNonQueryOnDatabase(@$"CREATE TABLE IF NOT EXISTS {tableName} (
-                                                            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                                                            HabitName TEXT NOT NULL,
-                                                            DateAndTime TEXT NOT NULL,
-                                                            Quantity REAL,
-                                                            )");
+                                                                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                                                HabitName TEXT NOT NULL,
+                                                                DateAndTime TEXT NOT NULL,
+                                                                Quantity REAL
+                                                                )");
 
         if (approvedConn != 0)
         {
@@ -71,7 +71,7 @@ internal class Program
                     //UpdateRecord();
                     break;
                 case '4':
-                    //DeleteRecord();
+                    DeleteRecord();
                     break;
                 default:
                     Console.WriteLine("\nYou entered invalid symbol or number! Try again.");
@@ -108,7 +108,7 @@ internal class Program
         connection.Open();
 
         var command = connection.CreateCommand();
-        command.CommandText = $"SELECT EXISTS(SELECT 1 FROM {tableName} WHERE DateAndTime = '{date}'";
+        command.CommandText = $"SELECT EXISTS(SELECT 1 FROM {tableName} WHERE DateAndTime = '{date}')";
         var query = Convert.ToInt32(command.ExecuteScalar());
 
         connection.Close();
@@ -123,7 +123,7 @@ internal class Program
         connection.Open();
 
         var command = connection.CreateCommand();
-        command.CommandText = $"SELECT EXISTS(SELECT 1 FROM {tableName} WHERE Id = '{id}'";
+        command.CommandText = $"SELECT EXISTS(SELECT 1 FROM {tableName} WHERE Id = '{id}')";
         var query = Convert.ToInt32(command.ExecuteScalar());
 
         connection.Close();
@@ -177,33 +177,22 @@ internal class Program
         Console.WriteLine("------------------\n");
         Console.WriteLine("Enter the name of habit that you are creating right now.\n");
         var habitName = Console.ReadLine();
-        var dateInput = GetDate();
-        var quantityInput =
-            GetQuantity(
-                "Enter the quantity of your habit length, dose or anything in any unit you want.\n-next page is about picking the measurement type.");
 
-        var recordsExist = 1;
-        string? date = null;
-
-        //Validate values.
-        while (recordsExist != 0)
-        {
-            date = GetDate();
-            recordsExist = CheckDatabaseForRecord(date);
-
-            if (recordsExist == 0) break;
-
-            Console.WriteLine("Record with this date already exists! Try again.");
-        }
-
+        var date = GetDate();
         if (date == "0")
         {
-            Console.WriteLine("No record will by added.");
+            Console.WriteLine("No record will be added.");
             return;
         }
+        var quantityInput =
+            GetDouble(
+                "Enter the quantity of your habit length, dose or anything in any unit you want.\n-> next page is about picking the measurement type.");
+        
+        var recordsExist = CheckDatabaseForRecord(date);
 
+        //Validate values.
         var quantity =
-            GetQuantity("Enter the quantity of your habit session. Pick a unit of measurement in the next step.\n");
+            GetDouble("Enter the quantity of your habit session. Pick a unit of measurement in the next step.\n");
 
         if (quantity == 0)
         {
@@ -212,14 +201,43 @@ internal class Program
         }
 
         var commandText =
-            @$"INSERT INTO {tableName} (HabitName, DateAndTime, Quantity) VALUES ('{habitName}', '{date}', {quantity})";
+            $"INSERT INTO {tableName} (HabitName, DateAndTime, Quantity) VALUES ('{habitName}', '{date}', {quantity})";
         int success = RunNonQueryOnDatabase(commandText);
         if (success == 0)
             Console.WriteLine("Record was not added to the database.\n");
         else
             Console.WriteLine("Record has been added!\n\n");
+
     }
 
+    private static void DeleteRecord()
+    {
+        Console.Clear();
+        ViewAllRecords();
+
+        int id = 
+            GetInt("Enter the ID of record that you want to delete from the list above.\n-quick actions -> enter 0 to go back to the menu.\n\nID: ");
+        if (id == 0)
+        {
+            Console.WriteLine("No records were deleted.\n\n");
+            return;
+        }
+        
+        int recordExists = CheckDatabaseForRecord(id);
+        if (recordExists == 0)
+        {
+            Console.WriteLine($"Record with  ID: {id} does not exist.\n\n");
+            return;
+        }
+
+        string commandText = $"DELETE FROM {tableName} WHERE Id = {id}";
+        int success = RunNonQueryOnDatabase(commandText);
+        if (success == 0)
+            Console.WriteLine("A problem has occurred with finding specified ID. Check record IDs and try again.\n\n");
+        else
+            Console.WriteLine($"Record with {id} has been successfully deleted.\n\n");
+
+    }
     //
     // Get Date and Quantity section
     //
@@ -249,7 +267,7 @@ internal class Program
         return date.ToString("yy-MM-dd HH:mm");
     }
 
-    private static double GetQuantity(string message)
+    private static double GetDouble(string message)
     {
         Console.WriteLine(message);
         double quantity = -1;
@@ -265,5 +283,22 @@ internal class Program
         }
 
         return quantity;
+    }
+
+    private static int GetInt(string message)
+    {
+        Console.WriteLine(message);
+        int number = -1;
+        var isValid = false;
+        while (isValid == false)
+        {
+            var input = Console.ReadLine();
+            if (int.TryParse(input, out number) && number >= 0)
+                isValid = true;
+            else
+                Console.WriteLine("Your entered number must be positive full number. Try again!");
+        }
+
+        return number;
     }
 }
