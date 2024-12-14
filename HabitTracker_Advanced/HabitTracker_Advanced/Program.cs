@@ -24,7 +24,8 @@ internal class Program
 
         if (approvedConn != 0)
         {
-            Console.WriteLine("System was unable to create specified database. Check program configuration and try again!\n\n");
+            Console.WriteLine(
+                "System was unable to create specified database. Check program configuration and try again!\n\n");
             Console.ReadKey();
             return;
         }
@@ -86,7 +87,7 @@ internal class Program
     //
     // Database SubOperations section
     //
-    private static int RunNonQueryOnDatabase(string commandText)
+    public static int RunNonQueryOnDatabase(string commandText)
     {
         using var connection = new SQLiteConnection(connectionString);
         connection.Open();
@@ -173,16 +174,18 @@ internal class Program
     {
         Console.Clear();
         Console.WriteLine("\nAdd new record");
-        Console.WriteLine("------------------");
-
+        Console.WriteLine("------------------\n");
+        Console.WriteLine("Enter the name of habit that you are creating right now.\n");
+        var habitName = Console.ReadLine();
         var dateInput = GetDate();
         var quantityInput =
             GetQuantity(
                 "Enter the quantity of your habit length, dose or anything in any unit you want.\n-next page is about picking the measurement type.");
 
         var recordsExist = 1;
-        string date = null;
+        string? date = null;
 
+        //Validate values.
         while (recordsExist != 0)
         {
             date = GetDate();
@@ -201,7 +204,20 @@ internal class Program
 
         var quantity =
             GetQuantity("Enter the quantity of your habit session. Pick a unit of measurement in the next step.\n");
-        if (quantity == 0) Console.WriteLine("No records will be added.");
+
+        if (quantity == 0)
+        {
+            Console.WriteLine("No records will be added.");
+            return;
+        }
+
+        var commandText =
+            @$"INSERT INTO {tableName} (HabitName, DateAndTime, Quantity) VALUES ('{habitName}', '{date}', {quantity})";
+        int success = RunNonQueryOnDatabase(commandText);
+        if (success == 0)
+            Console.WriteLine("Record was not added to the database.\n");
+        else
+            Console.WriteLine("Record has been added!\n\n");
     }
 
     //
