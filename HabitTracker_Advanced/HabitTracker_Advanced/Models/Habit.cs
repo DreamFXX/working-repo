@@ -9,6 +9,4 @@ public class Habit
     public DateTime DateAndTime { get; set; }
 
     public double Quantity { get; set; }
-    public string? Unit { get; set; }
 }
-

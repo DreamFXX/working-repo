@@ -10,6 +10,7 @@ internal class Program
     private static readonly string? connectionString =
         ConfigurationManager.ConnectionStrings["DefaultCnn"].ConnectionString;
 
+    //?!
     private static readonly string tableName = "Table_HabitTracker";
 
     private static void Main(string[] args)
@@ -19,13 +20,11 @@ internal class Program
                                                             HabitName TEXT NOT NULL,
                                                             DateAndTime TEXT NOT NULL,
                                                             Quantity REAL,
-                                                            Unit TEXT NOT NULL
                                                             )");
 
         if (approvedConn != 0)
         {
-            Console.WriteLine(
-                "System was unable to create specified database. Check program configuration and try again!\n\n");
+            Console.WriteLine("System was unable to create specified database. Check program configuration and try again!\n\n");
             Console.ReadKey();
             return;
         }
@@ -84,8 +83,10 @@ internal class Program
         }
     }
 
-    // Database SubOperations section.
-    public static int RunNonQueryOnDatabase(string commandText)
+    //
+    // Database SubOperations section
+    //
+    private static int RunNonQueryOnDatabase(string commandText)
     {
         using var connection = new SQLiteConnection(connectionString);
         connection.Open();
@@ -156,8 +157,7 @@ internal class Program
                     HabitName = reader.GetString(1),
                     DateAndTime = DateTime.ParseExact(reader.GetString(2), "yy-MM-dd HH:mm",
                         CultureInfo.InvariantCulture, DateTimeStyles.None),
-                    Quantity = reader.GetDouble(3),
-                    Unit = reader.GetString(4)
+                    Quantity = reader.GetDouble(3)
                 });
         else
             Console.WriteLine("No records stored in this Application. Start logging your habits!");
@@ -166,7 +166,7 @@ internal class Program
 
         foreach (var habit in habits)
             Console.WriteLine(
-                $"In Date and Time -> {habit.DateAndTime} you did {habit.HabitName} habit routine! info: Quantity = {habit.Quantity}{habit.Unit}");
+                $"In Date and Time -> {habit.DateAndTime} you did {habit.HabitName} habit routine! info: Quantity = {habit.Quantity}");
     }
 
     private static void InsertNewRecord()
@@ -178,7 +178,7 @@ internal class Program
         var dateInput = GetDate();
         var quantityInput =
             GetQuantity(
-                "Enter the quantity of your habit length, dose or anything in any unit you want.\n(Next page is filling the measurement type.)");
+                "Enter the quantity of your habit length, dose or anything in any unit you want.\n-next page is about picking the measurement type.");
 
         var recordsExist = 1;
         string date = null;
@@ -236,7 +236,6 @@ internal class Program
     private static double GetQuantity(string message)
     {
         Console.WriteLine(message);
-        var userInput = Console.ReadLine();
         double quantity = -1;
         var isValid = false;
 
