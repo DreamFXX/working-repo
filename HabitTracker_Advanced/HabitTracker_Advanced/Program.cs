@@ -68,7 +68,7 @@ internal class Program
                     InsertNewRecord();
                     break;
                 case '3':
-                    //UpdateRecord();
+                    UpdateRecord();
                     break;
                 case '4':
                     DeleteRecord();
@@ -176,7 +176,13 @@ internal class Program
         Console.WriteLine("\nAdd new record");
         Console.WriteLine("------------------\n");
         Console.WriteLine("Enter the name of habit that you are creating right now.\n");
+
         var habitName = Console.ReadLine();
+        if (string.IsNullOrWhiteSpace(habitName))
+        {
+            Console.WriteLine("Habit name cannot be empty.");
+            return;
+        }
 
         var date = GetDate();
         if (date == "0")
@@ -184,29 +190,42 @@ internal class Program
             Console.WriteLine("No record will be added.");
             return;
         }
-        var quantityInput =
-            GetDouble(
-                "Enter the quantity of your habit length, dose or anything in any unit you want.\n-> next page is about picking the measurement type.");
-        
-        var recordsExist = CheckDatabaseForRecord(date);
 
-        //Validate values.
-        var quantity =
-            GetDouble("Enter the quantity of your habit session. Pick a unit of measurement in the next step.\n");
-
-        if (quantity == 0)
+        var quantityInput = GetDouble(
+            "Enter the quantity of your habit session. Pick a unit of measurement in the next step.");
+        if (quantityInput == 0)
         {
-            Console.WriteLine("No records will be added.");
+            Console.WriteLine("Quantity cannot be zero.");
             return;
         }
 
+        var recordsExist = CheckDatabaseForRecord(date);
+        while (recordsExist != 0)
+        {
+            Console.WriteLine("Record with this date already exists! Try again.");
+            date = GetDate();
+            if (date == "0")
+            {
+                Console.WriteLine("No record will be added.");
+                return;
+            }
+
+            recordsExist = CheckDatabaseForRecord(date);
+        }
+
         var commandText =
-            $"INSERT INTO {tableName} (HabitName, DateAndTime, Quantity) VALUES ('{habitName}', '{date}', {quantity})";
-        int success = RunNonQueryOnDatabase(commandText);
-        if (success == 0)
-            Console.WriteLine("Record was not added to the database.\n");
-        else
-            Console.WriteLine("Record has been added!\n\n");
+                $"INSERT INTO {tableName} (HabitName, DateAndTime, Quantity) VALUES ('{habitName}', '{date}', {quantityInput})";
+            int success = RunNonQueryOnDatabase(commandText);
+
+            if (success == 0)
+                Console.WriteLine("Record was not added to the database.\n");
+            else
+                Console.WriteLine("Record has been added!\n\n");
+    }
+
+    private static void UpdateRecord()
+    {
+        Console.Clear();
 
     }
 
