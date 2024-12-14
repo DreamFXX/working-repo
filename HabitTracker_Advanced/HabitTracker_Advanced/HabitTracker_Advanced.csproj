@@ -10,12 +10,17 @@
 
   <ItemGroup>
     <None Remove="App.config" />
+    <None Remove="editorconfig.editorconfig" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="App.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Include="editorconfig.editorconfig" />
   </ItemGroup>
 
   <ItemGroup>

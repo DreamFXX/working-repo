@@ -226,6 +226,43 @@ internal class Program
     private static void UpdateRecord()
     {
         Console.Clear();
+        ViewAllRecords();
+
+        int id = GetInt("\nPlease enter the ID of the record you want to update or type 0 to return to main menu): ");
+
+        if (id == 0)
+        {
+            Console.WriteLine("No records will be updated.\n\n");
+            return;
+        }
+
+        if (CheckDatabaseForRecord(id) == 0)
+        {
+            Console.WriteLine($"No record with ID {id} found. No records will be updated.\n\n");
+            return;
+        }
+        string date = GetDate();
+        if (date == "0")
+        {
+            Console.WriteLine("No records will be updated.");
+            return;
+        }
+
+        double quantity = GetDouble("\n\nEnter the habit session quantity, measurement will be asked in the next step: ");
+        if (quantity == 0)
+        {
+            Console.WriteLine("No records will be updated.");
+            return;
+        }
+
+        string commandText = $"UPDATE {tableName} SET DateAndTime = '{date}', Quantity = {quantity} WHERE Id = {id}";
+
+        int success = RunNonQueryOnDatabase(commandText);
+
+        if (success == 0)
+            Console.WriteLine($"Unable to update record {id}.\n\n");
+        else
+            Console.WriteLine($"Record with ID {id} was updated.\n\n");
 
     }
 
